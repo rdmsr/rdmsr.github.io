@@ -1,4 +1,4 @@
-base_url = "https://rdmsr.dev"
+base_url = "https://rdmsr.github.io"
 title = "RDMSR"
 compile_sass = false
 generate_feeds = true
