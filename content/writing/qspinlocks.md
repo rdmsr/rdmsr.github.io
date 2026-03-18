@@ -92,16 +92,16 @@ Let us walk through the process of acquiring and releasing an MCS lock.
 
 First, CPU0 atomically swaps the tail pointer with a pointer to its own node and notices the previous value was `NULL`, indicating the queue was empty and the lock is now held by CPU0:
 
-{{ figure(src="/qspinlock-graph1.svg", alt="", caption="Uncontended case", width=500) }}
+{{ figure(src="/qspinlock-graph1.svg", alt="", caption="Uncontended case", width="50%") }}
 
 Now, CPU1 tries to acquire the lock, but it is contended: it notices the return value of the atomic exchange is non-`NULL` and sets the old tail's `next` value to its *own* `McsNode`, and spins on its own `locked` value until it is 1, ensuring spinning on CPU-local data:
 
-{{ figure(src="/qspinlock-graph2.svg", alt="", caption="Contended case", width=500) }}
+{{ figure(src="/qspinlock-graph2.svg", alt="", caption="Contended case", width="50%") }}
 
 When CPU0 releases the lock, it attempts to compare-and-swap (CAS) the tail pointer back to `NULL`. If the CAS succeeds, the queue is empty and the lock is free. If it fails, a successor has arrived, CPU0 then sets CPU1->locked = 1, waking CPU1 and handing off the lock.
 
 
-{{ figure(src="/qspinlock-graph3.svg", alt="", caption="CPU1 has successfully taken the lock", width=500) }}
+{{ figure(src="/qspinlock-graph3.svg", alt="", caption="CPU1 has successfully taken the lock", width="50%") }}
 
 ## Mechanism
 At their core, qspinlocks are based on MCS locks, but they do not have MCS nodes directly embedded within them, as a means to save space and keep the lock to a single 32-bit word. That word is structured as such:
@@ -389,9 +389,9 @@ The loop on `node->next` handles the inherent race in the two-step enqueue: a su
 ### Summary
 To summarize, the lock() function has three paths of increasing complexity:
 
-Fast path - the lock is uncontended, a single CAS is sufficient.
-Medium path - the lock is held but the queue is empty, we set the pending bit and spin on locked without touching the MCS queue.
-Slow path - the queue is occupied, we enqueue an MCS node, wait for our predecessor to promote us to head, then spin on the main lock word before taking ownership.
+1. Fast path: the lock is uncontended, a single CAS is sufficient.
+2. Medium path: the lock is held but the queue is empty, we set the pending bit and spin on locked without touching the MCS queue.
+3. Slow path: the queue is occupied, we enqueue an MCS node, wait for our predecessor to promote us to head, then spin on the main lock word before taking ownership.
 
 ## Unlocking
 Phew, that was a lot to uncover for locking! Thankfully `unlock()` is very simple:
