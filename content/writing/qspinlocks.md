@@ -407,10 +407,10 @@ This is actually the reason why we use a whole byte for `locked` instead of a bi
 # Benchmarks
 It's fun to nerd out on lock implementations but how much faster is `qspinlock`?
 
-I have set up a simple benchmark, measuring `SpinLock` against `TicketLock` and `QSpinLock`, it consists of creating N threads (up to `nproc`) all pinned to their own CPU cores taking the lock and pushing back to a `std::vector<int>`:
+I have set up a simple benchmark, measuring `SpinLock` against `TicketLock` and `QSpinLock`, it consists of creating N threads (up to `nproc`) all pinned to their own CPU cores taking the lock and pushing to a `std::vector<int>`:
 
 ```c++
-for (int j = 0; j < OPS_PER_THREAD; ++j) {
+for (int j = 0; j < OPS_PER_THREAD; j++) {
     lock.lock();
     shared_vector.push_back(j);
     lock.unlock();
