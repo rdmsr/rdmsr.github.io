@@ -186,6 +186,18 @@ figcaption { margin-top: 8px; font-family: var(--mono); font-size: var(--text-sm
 .toc ul ul { padding-left: 16px; opacity: 0.6; }
 
 
+.article-copyright {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+
 @media (max-width: 700px) {
   body { font-size: 18px; }
   .wrapper { width: min(100% - 32px, 1080px); padding: 48px 0 64px; }

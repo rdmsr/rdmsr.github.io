@@ -36,6 +36,11 @@
     {{ page.content | safe }}
 </div>
 
+<div class="article-copyright">
+    © {{ page.date | date(format="%Y") }} RDMSR — 
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+</div>
+
 <div class="article-footer">
     {% if page.lower %}
     <div>
