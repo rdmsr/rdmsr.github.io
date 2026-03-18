@@ -444,9 +444,9 @@ Here are the results:
 We can see the naive spinlock is much faster uncontended, which is expected since it is the simplest (it's also unfair!).
 We can also see `qspinlock` seems to scale better than both the naive spinlock and the ticket spinlock, maintaining relatively stable throughput as thread count increases.
 
-**Why is it so slow in the first run though?**
-In theory, `qspinlock` should be as fast as a spinlock in the uncontended case, so why is it not? **Honestly, I'm not sure**, but my best guess is that it is because of the very short critical section causing a *load-store forwarding stall*:
-since we write to `locked` as a byte in `unlock()`, but access the value as a 32-bit integer in `lock()`, the CPU stalls on cache and we end up with poor performance.
+**Why is it so slow uncontended though?**
+In theory, `qspinlock` should be as fast as a spinlock in the uncontended case, so why is it not? **Honestly, I'm not sure**, but my best guess is that it is because of the very short critical section causing a *store-to-load forwarding stall*:
+since we write to `locked` as a byte in `unlock()`, but access the value as a 32-bit integer in `lock()`, the CPU pipeline stalls and we end up with poor performance.
 In fact, changing `unlock()` to:
 
 ```c++
