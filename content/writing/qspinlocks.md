@@ -270,7 +270,7 @@ void queue() {
 The `IdxGuard` RAII pattern ensures the slot is released when `queue()` returns, regardless of which path we exit through. If all slots are exhausted, which should very rarely happen in practice, we fall back to spinning directly on `try_lock()`.
 
 
-W then initialise the node and make one last opportunistic attempt to grab the lock. As the Linux source notes, we have just touched a (possibly cold) cache line to initialise the node, someone may have released the lock while we weren't watching, so it is worth trying once more before committing to the queue:
+We then initialise the node and make one last opportunistic attempt to grab the lock. As the Linux source notes, we have just touched a (possibly cold) cache line to initialise the node, someone may have released the lock while we weren't watching, so it is worth trying once more before committing to the queue:
 
 ```c++
 McsNode *node = &cpus[my_cpu->id]->qnodes[idx];
@@ -297,7 +297,7 @@ uint32_t encode_tail(uint32_t cpu_id, uint32_t idx) {
 }
 ```
 
-Note the `cpu_id + 1` - CPU IDs start at 0, so a raw ID of 0 would be indistinguishable from an empty tail field. Adding 1 ensures that a non-zero tail always indicates a real waiter.
+Note the `cpu_id + 1`: CPU IDs start at 0, so an ID of 0 would be indistinguishable from an empty tail field. Adding 1 ensures that a non-zero tail always indicates a real waiter.
 
 
 We then atomically exchange the tail field with our new value, retrieving the previous tail:
@@ -356,7 +356,7 @@ while (((v = val.load(std::memory_order_acquire)) &
 ```
 
 
-Now we attempt to take ownership. If we are the only waiter in the queue, meaning the tail still points to our node , we try to atomically claim the lock and clear the tail in one CAS, leaving the lock word clean:
+Now we attempt to take ownership. If we are the only waiter in the queue, meaning the tail still points to our node, we try to atomically claim the lock and clear the tail in one CAS, leaving the lock word clean:
 
 ```c++
 if ((v & TAIL_MASK) == tail) {
