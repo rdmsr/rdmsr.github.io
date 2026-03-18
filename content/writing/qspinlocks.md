@@ -20,7 +20,7 @@ This article traces the evolution of spinlock designs that led to `qspinlock`, a
 # Spinlocks
 Spinlocks are the simplest synchronization primitive to implement; as their name indicates, they spin on the lock until it is released.
 
-{{ figure(src="https://media.tenor.com/4L1o9fDxI4wAAAAM/omg-why.gif", alt="", width=300, caption="Artistic depiction of a CPU spinning on a lock") }}
+{{ figure(src="https://media.tenor.com/4L1o9fDxI4wAAAAM/omg-why.gif", alt="", width=300, caption="Artist's impression of a CPU spinning on a lock") }}
 
 Here is a sample implementation using the Test-and-Test-And-Set (TTAS) pattern, which is generally considered to be the most efficient:
 ```c++
@@ -267,10 +267,10 @@ void queue() {
   // ...
 }
 ```
-The `IdxGuard` RAII pattern ensures the slot is released when `queue()` returns, regardless of which path we exit through. If all slots are exhausted, which should very rarely happen in practice, we fall back to spinning directly on `try_lock()`.
+The `IdxGuard` RAII pattern ensures the slot is released when `queue()` returns, regardless of which path we exit through. If all slots are exhausted, which should very rarely happen in practice, we fall back to spinning directly on `try_lock()` (which simply tries to CAS `val` with `LOCKED_VAL`).
 
 
-We then initialise the node and make one last opportunistic attempt to grab the lock. As the Linux source notes, we have just touched a (possibly cold) cache line to initialise the node, someone may have released the lock while we weren't watching, so it is worth trying once more before committing to the queue:
+We then initialize the node and make one last opportunistic attempt to grab the lock. As the Linux source notes, we have just touched a (possibly cold) cache line to initialize the node and someone may have released the lock while we weren't watching, so it is worth trying once more before committing to the queue:
 
 ```c++
 McsNode *node = &cpus[my_cpu->id]->qnodes[idx];
@@ -407,7 +407,7 @@ This is actually the reason why we use a whole byte for `locked` instead of a bi
 # Benchmarks
 It's fun to nerd out on implementation details but how much faster is `qspinlock`?
 
-I have set up a simple benchmark, measuring `SpinLock` against `TicketLock` and `QSpinLock`, it consists of creating N threads (up to `nproc`) all pinned to their own CPU cores taking the lock and pushing to a `std::vector<int>`:
+I have set up a simple benchmark, measuring `SpinLock` against `TicketLock` and `QSpinLock`, it consists of creating N threads (up to `nproc`) all pinned to their own CPU cores taking the lock and pushing 500 000 elements to a `std::vector<int>`:
 
 ```c++
 for (int j = 0; j < OPS_PER_THREAD; j++) {
@@ -455,11 +455,11 @@ void unlock() {
 }
 ```
 
-Yields the same performance as the ticket lock with a single thread, which is expected since both need a Read-Modify-Write (RMW) operation.
-Changing this to a simple store over the whole value (which is actually incorrect), yields the same performance as spinlock on the same test.
+Yields the same unconteded erformance as the ticket lock, which is expected since both need a Read-Modify-Write (RMW) operation. This is slower overall, though.
+Changing this to a simple store over the whole value (which is actually incorrect), yields the same uncontended performance as spinlock.
 
 In practice, real critical sections are rarely that short, the additional work done while holding the lock gives the pipeline enough time to resolve the stall, so this might not be an actual concern.
-(Also, it only happens on one thread!)
+(Also, it only happens uncontended!)
 
 # Summary
 `qspinlock` is not a silver bullet and its implementation is significantly more complex than either a plain spinlock or a ticket lock. 
