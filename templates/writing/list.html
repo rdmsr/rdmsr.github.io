@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Writing — RDMSR{% endblock title %}
+
+{% block content %}
+
+<hr>
+<h2>All Writing</h2>
+
+{% set_global current_year = "" %}
+{% for post in section.pages %}
+{% set year = post.date | date(format="%Y") %}
+{% if year != current_year %}
+{% if not loop.first %}</div>{% endif %}
+<div class="year-group">
+    <div class="year-label">{{ year }}</div>
+    {% set_global current_year = year %}
+    {% endif %}
+
+    <div class="entry">
+        <span class="entry-meta">{{ post.extra.type }}</span>
+        <a href="{{ post.permalink }}" class="entry-title">{{ post.title }}</a>
+        {% if post.description %}
+        <p>{{ post.description }}</p>
+        {% endif %}
+    </div>
+
+    {% if loop.last %}
+</div>{% endif %}
+{% endfor %}
+
+{% endblock content %}

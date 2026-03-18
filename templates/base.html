@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RDMSR{% endblock title %}</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <header>
+            <a href="/" class="site-title">RDMSR</a>
+            <nav>
+                <a href="/" {% if current_path=="/" %}class="active" {% endif %}>Home</a>
+                <a href="/writing" {% if current_path is starting_with("/writing") %}class="active" {% endif
+                    %}>Writing</a>
+                <a href="https://github.com/rdmsr">GitHub</a>
+            </nav>
+            {% block header_extra %}{% endblock header_extra %}
+        </header>
+
+        <main>
+            {% block content %}{% endblock content %}
+        </main>
+    </div>
+</body>
+
+</html>

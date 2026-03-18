@@ -1,0 +1,22 @@
+base_url = "https://rdmsr.dev"
+title = "RDMSR"
+compile_sass = false
+generate_feeds = true
+
+[extra]
+author = "rdmsr"
+
+[markdown]
+highlighting.theme = "ayu-dark"
+
+[[extra.projects]]
+title = "fuga"
+meta = 'Software'
+url = "https://github.com/fuga-org/fuga"
+description = "Microkernel from scratch"
+
+[[extra.projects]]
+title = "duck"
+meta = 'Software'
+url = "https://github.com/rdmsr/duck"
+description = "Modern documentation generator for C and C++"

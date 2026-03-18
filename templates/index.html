@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block header_extra %}
+<p class="bio">I make computers go beep boop.</p>
+{% endblock header_extra %}
+
+{% block content %}
+
+<hr>
+<h2>Writing</h2>
+
+{% set writing = get_section(path="writing/_index.md") %}
+{% for post in writing.pages | slice(end=3) %}
+<div class="entry">
+    <span class="entry-meta">
+        {{ post.date | date(format="%Y") }}
+        <span class="sep">//</span>
+        {{ post.extra.type }}
+    </span>
+    <a href="{{ post.permalink }}" class="entry-title">{{ post.title }}</a>
+    {% if post.description %}
+    <p>{{ post.description }}</p>
+    {% endif %}
+</div>
+{% endfor %}
+
+<a href="/writing" class="archive-link">All writing →</a>
+
+<hr>
+<h2>Projects</h2>
+
+{% for project in config.extra.projects %}
+<div class="entry">
+    <span class="entry-meta">
+        {{ project.meta | safe }}
+    </span>
+    <a href="{{ project.url }}" class="entry-title">{{ project.title }}</a>
+    <p>{{ project.description }}</p>
+</div>
+{% endfor %}
+
+{% endblock content %}
