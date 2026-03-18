@@ -405,7 +405,7 @@ void unlock() {
 This is actually the reason why we use a whole byte for `locked` instead of a bit: `unlock()` is as simple as an atomic byte store!
 
 # Benchmarks
-It's fun to nerd out on lock implementations but how much faster is `qspinlock`?
+It's fun to nerd out on implementation details but how much faster is `qspinlock`?
 
 I have set up a simple benchmark, measuring `SpinLock` against `TicketLock` and `QSpinLock`, it consists of creating N threads (up to `nproc`) all pinned to their own CPU cores taking the lock and pushing to a `std::vector<int>`:
 
@@ -441,7 +441,7 @@ Here are the results:
 | 8       | 9,575,916      | 4,925,312       | 16,911,329   |
 | 12      | 5,384,959      | 3,107,082       | 13,454,086   |
 
-We can see the naive spinlock is much faster uncontended, which is expected since it is the simplest (it's also unfair!).
+We can see the naive spinlock is much faster uncontended, which is expected since it is the simplest (albeit unfair).
 We can also see `qspinlock` seems to scale better than both the naive spinlock and the ticket spinlock, maintaining relatively stable throughput as thread count increases.
 
 **Why is it so slow uncontended though?**
