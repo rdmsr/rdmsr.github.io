@@ -455,7 +455,7 @@ void unlock() {
 }
 ```
 
-Yields the same unconteded performance as the ticket lock, which is expected since both need a Read-Modify-Write (RMW) operation. This is slower overall, though.
+Yields the same uncontended performance as the ticket lock, which is expected since both need a Read-Modify-Write (RMW) operation. This is slower overall, though.
 Changing this to a simple store over the whole value (which is actually incorrect), yields the same uncontended performance as spinlock.
 
 In practice, real critical sections are rarely that short, the additional work done while holding the lock gives the pipeline enough time to resolve the stall, so this might not be an actual concern.
