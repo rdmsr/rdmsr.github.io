@@ -7,7 +7,8 @@ generate_feeds = true
 author = "rdmsr"
 
 [markdown]
-highlighting.theme = "ayu-dark"
+highlighting.style = "class"
+highlighting.theme = "vitesse-light"
 
 [[extra.projects]]
 title = "fuga"
