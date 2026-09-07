@@ -1,0 +1,6 @@
+{% component figure(src, alt="", width="", caption="") %}
+<figure>
+  <img src="{{ src }}" alt="{{ alt }}"{% if width %} width="{{ width }}"{% endif %}>
+  <figcaption>{{ caption }}</figcaption>
+</figure>
+{% endcomponent figure %}

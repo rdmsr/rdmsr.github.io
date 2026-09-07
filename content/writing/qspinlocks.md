@@ -20,7 +20,7 @@ This article traces the evolution of spinlock designs that led to `qspinlock`, a
 # Spinlocks
 Spinlocks are the simplest synchronization primitive to implement; as their name indicates, they spin on the lock until it is released.
 
-{{ figure(src="https://media.tenor.com/4L1o9fDxI4wAAAAM/omg-why.gif", alt="", width=300, caption="Artist's impression of a CPU spinning on a lock") }}
+{{<figure src="https://media.tenor.com/4L1o9fDxI4wAAAAM/omg-why.gif" alt="" width="300" caption="Artist's impression of a CPU spinning on a lock"/>}}
 
 Here is a sample implementation using the Test-and-Test-And-Set (TTAS) pattern, which is generally considered to be the most efficient:
 ```c++
@@ -92,22 +92,22 @@ Let us walk through the process of acquiring and releasing an MCS lock.
 
 First, CPU0 atomically swaps the tail pointer with a pointer to its own node and notices the previous value was `NULL`, indicating the queue was empty and the lock is now held by CPU0:
 
-{{ figure(src="/qspinlock-graph1.svg", alt="", caption="Uncontended case", width="50%") }}
+{{<figure src="/qspinlock-graph1.svg" alt="" caption="Uncontended case" width="50%"/>}}
 
 Now, CPU1 tries to acquire the lock, but it is contended: it notices the return value of the atomic exchange is non-`NULL` and sets the old tail's `next` value to its *own* `McsNode`, and spins on its own `locked` value until it is 1, ensuring spinning on CPU-local data:
 
-{{ figure(src="/qspinlock-graph2.svg", alt="", caption="Contended case", width="50%") }}
+{{<figure src="/qspinlock-graph2.svg" alt="" caption="Contended case" width="50%"/>}}
 
 When CPU0 releases the lock, it attempts to compare-and-swap (CAS) the tail pointer back to `NULL`. If the CAS succeeds, the queue is empty and the lock is free. If it fails, a successor has arrived, CPU0 then sets CPU1->locked = 1, waking CPU1 and handing off the lock.
 
 
-{{ figure(src="/qspinlock-graph3.svg", alt="", caption="CPU1 has successfully taken the lock", width="50%") }}
+{{<figure src="/qspinlock-graph3.svg" alt="" caption="CPU1 has successfully taken the lock" width="50%"/>}}
 
 ## Mechanism
 At their core, qspinlocks are based on MCS locks, but they do not have MCS nodes directly embedded within them, as a means to save space and keep the lock to a single 32-bit word. That word is structured as such:
 
 
-{{ figure(src="/qspinlock-structure.svg", alt="", caption="Layout of a qspinlock", width="100%") }}
+{{<figure src="/qspinlock-structure.svg" alt="" caption="Layout of a qspinlock" width="100%"/>}}
 
 In this implementation, we will define a qspinlock as:
 ```c++
@@ -430,7 +430,7 @@ We then wait for each thread to complete and measure the time taken:
 
 Here are the results:
 
-{{ figure(src="/qspinlock-throughput.png", alt="", caption="Benchmark executed on a Ryzen 5 5600X", width="100%") }}
+{{<figure src="/qspinlock-throughput.png" alt="" caption="Benchmark executed on a Ryzen 5 5600X" width="100%"/>}}
 
 
 | Threads | Spinlock (ops/s) | Ticket Spinlock (ops/s) | qspinlock (ops/s) |

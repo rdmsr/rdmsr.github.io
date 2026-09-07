@@ -10,7 +10,7 @@
 <h2>Writing</h2>
 
 {% set writing = get_section(path="writing/_index.md") %}
-{% for post in writing.pages | slice(end=3) %}
+{% for post in writing.pages[:3] %}
 <div class="entry">
     <span class="entry-meta">
         {{ post.date | date(format="%Y") }}

@@ -14,7 +14,7 @@
             <a href="/" class="site-title">RDMSR</a>
             <nav>
                 <a href="/" {% if current_path=="/" %}class="active" {% endif %}>Home</a>
-                <a href="/writing" {% if current_path is starting_with("/writing") %}class="active" {% endif
+                <a href="/writing" {% if current_path is starting_with(pat="/writing") %}class="active" {% endif
                     %}>Writing</a>
                 <a href="https://github.com/rdmsr">GitHub</a>
             </nav>
