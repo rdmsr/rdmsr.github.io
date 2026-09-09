@@ -139,7 +139,9 @@ Keen observers may have noticed a glaring limitation with this scheme: a turnsti
 
 This is where things get awkward. If a writer is blocked behind several readers, there is no single owner for it to donate its priority to.
 
-Instead, kernels that use turnstiles rely on heuristics or "good enough" solutions, such as picking the first thread that acquired the lock as the inheritor, or straight up giving up on priority inheritance for multi-owner locks altogether.
+Instead, kernels that use turnstiles rely on heuristics or "good enough" solutions, such as picking the first thread that acquired the lock as the inheritor, or straight up giving up on priority inheritance for multi-owner locks altogether. 
+Another possible solution is simply boosting a thread's priority to some given ceiling before taking a shared lock.
+
 
 I believe that the only priority inheritance scheme that *does* support multiple inheritors is NT's AutoBoost, but its internals are not widely documented.
 
@@ -169,7 +171,8 @@ Interestingly, the same basic idea shows up outside of operating-system kernels 
 
 Just like a turnstile, a parking lot keeps the expensive waiter machinery outside of the lock itself. When a thread needs to block, the address of the lock is used to find the corresponding wait queue in a global table.
 
-The important difference is that a parking lot is primarily concerned with putting threads to sleep and waking them back up; it does not provide the priority-inheritance machinery that made Solaris turnstiles special, as userspace does not need to concern itself with such issues.
+The important difference is that a parking lot is primarily concerned with putting threads to sleep and waking them back up; it does not provide the priority-inheritance machinery that made Solaris turnstiles special, as userspace does not need to concern itself with managing priority inheritance, and instead lets the kernel do it through mechanisms like PI-futex on Linux.
+
 
 
 ## Resources
