@@ -13,7 +13,7 @@ Sun microsystems' Solaris was once widely regarded as having some of the best sy
 Much of this technical strength came from innovations developed within the project.
 
 
-Although Solaris is now mostly defunct [^1], its influence remains substantial; technologies pioneered by Solaris can still be found across a [wide](https://en.wikipedia.org/wiki/ZFS) [range](https://en.wikipedia.org/wiki/Slab_allocation) of [software](https://en.wikipedia.org/wiki/DTrace)
+Although Solaris is now mostly defunct [^1], its influence remains substantial; technologies pioneered by Solaris can still be found across a [wide](https://en.wikipedia.org/wiki/ZFS) [range](https://en.wikipedia.org/wiki/Slab_allocation) [of](https://en.wikipedia.org/wiki/Solaris_Containers) [software](https://en.wikipedia.org/wiki/DTrace)
 
 A lot of Solaris' inventions have been described and talked about *ad nauseam* (such as the Slab Allocator), but one I rarely see discussed is its use of **turnstiles**.
 
