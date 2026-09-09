@@ -52,7 +52,7 @@ Disabling preemption effectively puts the thread at the highest priority on the 
 
 This is great for throughput, but latency can suffer if preemption stays disabled for too long.
 
-Blocking locks, on the other hand, do not disable preemption, which allows for better latency behavior; high priority tasks can interrupt other lower priority tasks. This can also reduce throughput however, so there is no single best solution (though this can in part be worked around through the use of *adaptive spinning*)
+Blocking locks, on the other hand, do not disable preemption, which allows for better latency behavior; high priority tasks can interrupt other lower priority tasks. This can also reduce throughput however, so there is no single best solution (though this can partly be worked around through the use of *adaptive spinning*)
 
 
 Since threads keep their priority when holding a lock, an especially ugly situation can occur: What if high priority task A tries to acquire a lock currently held by low priority task B?
