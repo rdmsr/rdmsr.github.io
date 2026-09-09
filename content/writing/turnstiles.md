@@ -4,7 +4,6 @@ date = 2026-09-08
 
 [extra]
 type = "Post"
-toc = true
 +++
 
 

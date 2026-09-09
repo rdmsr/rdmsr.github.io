@@ -5,7 +5,6 @@ description = "Understanding and reimplementing Linux qspinlocks"
 
 [extra]
 type = "Post"
-toc = true
 +++
 
 ## Introduction
