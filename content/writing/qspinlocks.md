@@ -1,5 +1,5 @@
 +++
-title = "OS Internals: Linux qspinlocks"
+title = "Linux qspinlocks"
 date = 2026-03-17
 description = "Understanding and reimplementing Linux qspinlocks"
 
@@ -8,7 +8,7 @@ type = "Post"
 toc = true
 +++
 
-# Introduction
+## Introduction
 
 The Linux kernel has a variety of synchronization mechanisms, each suited to a different context and set of constraints. 
 The simplest one of them all is the spinlock; spinlocks are used everywhere short, fast mutual exclusion is needed and blocking is either too costly or outright forbidden, such as in interrupt handlers and scheduler code.
@@ -17,7 +17,7 @@ This article traces the evolution of spinlock designs that led to `qspinlock`, a
 
 
 
-# Spinlocks
+## Spinlocks
 Spinlocks are the simplest synchronization primitive to implement; as their name indicates, they spin on the lock until it is released.
 
 {{<figure src="https://media.tenor.com/4L1o9fDxI4wAAAAM/omg-why.gif" alt="" width="300" caption="Artist's impression of a CPU spinning on a lock"/>}}
@@ -43,7 +43,7 @@ struct SpinLock {
 It is important to note that spinlocks are **inherently unfair**: when the lock is released, all waiting CPUs race for it simultaneously, and there is no guarantee that the longest-waiting CPU will win. A CPU that is topologically closer to the releasing CPU, such as one sharing an L3 cache or sitting on the same NUMA node, will tend to win repeatedly, potentially starving remote CPUs indefinitely under sustained contention.
 
 
-# Ticket spinlocks
+### Ticket spinlocks
 One way to implement fairness in spinlocks is using *Ticket spinlocks*, such locks work similarly to a deli counter: each waiter draws a ticket and is served strictly in order, providing a First-In-First-Out (FIFO) ordering.
 
 These locks have the advantage that they provide a good bang for the buck: they are simple to implement, performant and provide guaranteed fairness.
@@ -65,15 +65,15 @@ struct TicketLock {
 
 Before moving to `qspinlock`, Linux used something similar for its locks, albeit fitting them in a single 32-bit value.
 
-# qspinlock
+## qspinlock
 
-## Motivations
+### Motivations
 **If ticket spinlocks are so great, why did Linux switch away from them?**
 The answer to this question lies in scalability: when a large number of cores contend on the same lock, this causes *cache line bouncing*, where the cache line of the lock is repeatedly transferred between CPUs, and each unlock invalidates every waiting CPU's cached copy simultaneously. With *N*
 waiters, a single unlock triggers *N* cache line transfers, increasing coherence traffic and causing latency to degrade as contention grows.
 
-## MCS Locks
-> Note: MCS Locks are better explained in this [LWN Article](https://lwn.net/Articles/590243/) and most of the information presented here comes from it.
+### MCS Locks
+Note: MCS Locks are better explained in this [LWN Article](https://lwn.net/Articles/590243/) and most of the information presented here comes from it.
 
 One mechanism that solves this is the *MCS lock* (named after its authors), which eliminates cache line bouncing by giving each waiter its own cache line to spin on.
 
@@ -103,11 +103,11 @@ When CPU0 releases the lock, it attempts to compare-and-swap (CAS) the tail poin
 
 {{<figure src="/qspinlock-graph3.svg" alt="" caption="CPU1 has successfully taken the lock" width="50%"/>}}
 
-## Mechanism
+### Mechanism
 At their core, qspinlocks are based on MCS locks, but they do not have MCS nodes directly embedded within them, as a means to save space and keep the lock to a single 32-bit word. That word is structured as such:
 
 
-{{<figure src="/qspinlock-structure.svg" alt="" caption="Layout of a qspinlock" width="100%"/>}}
+{{<figure src="/qspinlock-structure.svg" alt="" caption="Layout of a qspinlock" width="80%"/>}}
 
 In this implementation, we will define a qspinlock as:
 ```c++
@@ -136,16 +136,16 @@ Let's go through every field one by one:
 2. `pending`: Used as an optimization when there is only one CPU waiting for the lock to be freed. Rather than setting up a full MCS queue node, the first waiter simply sets this bit and spins on locked.
 3. `tail`: Split into two subfields: the lowest two bits encode the `qnode` slot index and the remaining bits encode the CPU ID of the tail node. 
 
-### qnodes
+#### qnodes
 The value encoded in the tail field indexes into a per-CPU array of MCS nodes called `qnodes`. Linux allocates 4 nodes per CPU.
 The reason there is an array rather than a single node is to handle nested acquisition: if an interrupt fires on a CPU that is already waiting on the lock, it needs a separate node, so each CPU maintains a small array of nodes instead of just one (though it is discouraged to take locks in interrupts anyway!).
 
 Let's now go through the implementation of locking.
 
-## Locking
-> Note: This implementation is mostly based on the actual Linux code, adapted for C++ and omitting extraneous checks
+### Locking
+Note: This implementation is mostly based on the actual Linux code, adapted for C++ and omitting extraneous checks
 
-### Constants
+#### Constants
 Let us first define a few useful constants related to extracting fields from the 32-bit word:
 
 ```c++
@@ -166,7 +166,7 @@ Let us first define a few useful constants related to extracting fields from the
 Each `_MASK` constant isolates its field via a bitwise AND, for example, `val & LOCKED_MASK` extracts the locked byte. Each `_VAL` constant is the value written to set that field, `LOCKED_VAL` is 1 in bit 0, `PENDING_VAL` is 1 in bit 8. The `_OFFSET` constants are the shift amounts used when encoding and decoding the tail field: the slot index sits at bit 16, and the CPU ID at bit 18.
 
 
-### The fastest path
+#### The fastest path
 The fastest path happens when we try to grab an uncontended lock. In that case, we can just set the `locked` bit and be done:
 
 ```c++
@@ -183,7 +183,7 @@ void lock() {
   }
 ```
 
-### The medium path
+#### The medium path
 
 The medium path happens when we try to grab a contended lock with no waiter.
 First, we check whether the only bit set is `pending`, this indicates that a pending waiter is mid-transition, in the process of atomically clearing pending and setting locked to take ownership. We spin for up to `PENDING_LOOPS` iterations to let that transition complete:
@@ -244,7 +244,7 @@ Once `locked` is clear, we atomically clear pending and set locked in a single 1
 split.locked_pending.store(1, std::memory_order_release);
 ```
 
-### The slow path
+#### The slow path
 The slow path occurs when we have no choice but to queue on the lock.
 We first attempt to allocate an `McsNode` from our per-CPU stash by claiming a slot index from `curr_idx`,
 if there is none available we have no choice but to spin on `locked`:
@@ -386,14 +386,14 @@ next->locked.store(1, std::memory_order_release);
 The loop on `node->next` handles the inherent race in the two-step enqueue: a successor may have already swapped the tail but not yet written their next pointer. We simply wait for them to finish. Once next is visible, a single store to `next->locked` wakes the successor and hands off the queue head, completing the acquisition.
 
 
-### Summary
+#### Summary
 To summarize, the lock() function has three paths of increasing complexity:
 
 1. Fast path: the lock is uncontended, a single CAS is sufficient.
 2. Medium path: the lock is held but the queue is empty, we set the pending bit and spin on locked without touching the MCS queue.
 3. Slow path: the queue is occupied, we enqueue an MCS node, wait for our predecessor to promote us to head, then spin on the main lock word before taking ownership.
 
-## Unlocking
+### Unlocking
 Phew, that was a lot to uncover for locking! Thankfully `unlock()` is very simple:
 
 ```c++
@@ -404,7 +404,7 @@ void unlock() {
 
 This is actually the reason why we use a whole byte for `locked` instead of a bit: `unlock()` is as simple as an atomic byte store!
 
-# Benchmarks
+## Benchmarks
 It's fun to nerd out on implementation details but how much faster is `qspinlock`?
 
 I have set up a simple benchmark, measuring `SpinLock` against `TicketLock` and `QSpinLock`, it consists of creating N threads (up to `nproc`) all pinned to their own CPU cores taking the lock and pushing 500 000 elements to a `std::vector<int>`:
@@ -461,7 +461,7 @@ Changing this to a simple store over the whole value (which is actually incorrec
 In practice, real critical sections are rarely that short, the additional work done while holding the lock gives the pipeline enough time to resolve the stall, so this might not be an actual concern.
 (Also, it only happens uncontended!)
 
-# Summary
+## Summary
 `qspinlock` is not a silver bullet and its implementation is significantly more complex than either a plain spinlock or a ticket lock. 
 However, on a machine with many cores, as many as Linux needs to run on, the CPU-local spinning does make a measurable difference under sustained contention, even on my puny 6c/12t machine.
 

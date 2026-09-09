@@ -1,42 +1,80 @@
 {% extends "base.html" %}
 
-{% block header_extra %}
-<p class="bio">I make computers go beep boop.</p>
-{% endblock header_extra %}
+{% block header %}
+<h2>About</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">Information</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Name</td>
+            <td>Loïc Grégoire</td>
+        </tr>
+        <tr>
+            <td>Occupation</td>
+            <td>1st year Computer Engineering Student</td>
+        </tr>
+        <tr>
+            <td>Github</td>
+            <td><a href="https://github.com/rdmsr">rdmsr</a></td>
+        </tr>
+        <tr>
+            <td>E-mail</td>
+            <td><a href="mailto:loic@gregoire.dev">loic@gregoire.dev (soon)</a></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock header %}
 
 {% block content %}
 
-<hr>
 <h2>Writing</h2>
 
 {% set writing = get_section(path="writing/_index.md") %}
-{% for post in writing.pages[:3] %}
-<div class="entry">
-    <span class="entry-meta">
-        {{ post.date | date(format="%Y") }}
-        <span class="sep">//</span>
-        {{ post.extra.type }}
-    </span>
-    <a href="{{ post.permalink }}" class="entry-title">{{ post.title }}</a>
-    {% if post.description %}
-    <p>{{ post.description }}</p>
-    {% endif %}
-</div>
-{% endfor %}
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Title</th>
+            <th class="col-link">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in writing.pages %}
+        <tr>
+            <td>{{ post.date }}</td>
+            <td><a href="{{ post.permalink }}">{{ post.title }}</a></td>
+            <td class="col-link"><a href="{{ post.permalink }}" class="link">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-<a href="/writing" class="archive-link">All writing →</a>
-
-<hr>
 <h2>Projects</h2>
 
-{% for project in config.extra.projects %}
-<div class="entry">
-    <span class="entry-meta">
-        {{ project.meta | safe }}
-    </span>
-    <a href="{{ project.url }}" class="entry-title">{{ project.title }}</a>
-    <p>{{ project.description }}</p>
-</div>
-{% endfor %}
+<table>
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th class="col-link">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in config.extra.projects %}
+        <tr>
+            <td>{{ project.meta | safe }}</td>
+            <td><a href="{{ project.url }}">{{ project.title }}</a></td>
+            <td>{{ project.description }}</td>
+            <td class="col-link"><a href="{{ project.url }}" class="link">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock content %}

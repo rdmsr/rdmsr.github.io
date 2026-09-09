@@ -4,60 +4,29 @@
 
 {% block content %}
 
-<div class="article-header">
-    <p class="article-meta">
-        {{ page.date | date(format="%Y") }}
-        <span class="sep">//</span>
-        {{ page.extra.type }}
-    </p>
-    <h1 class="article-title">{{ page.title }}</h1>
-    {% if page.description %}
-    <p class="article-subtitle">{{ page.description }}</p>
-    {% endif %}
-</div>
-{% if page.extra.toc %}
-<nav class="toc">
-  <ul>
-    {% for h in page.toc %}
-    <li><a href="{{ h.permalink }}">{{ h.title }}</a>
-      {% if h.children %}
-      <ul>
-        {% for h2 in h.children %}
-        <li><a href="{{ h2.permalink }}">{{ h2.title }}</a></li>
-        {% endfor %}
-      </ul>
-      {% endif %}
-    </li>
-    {% endfor %}
-  </ul>
-</nav>
-{% endif %}
-<div class="article-body">
-    {{ page.content | safe }}
-</div>
+<article>
+    <header class="article-header">
+        <div class="article-header-bar">
+            <span>Writing</span>
+            <time datetime="{{ page.date }}">{{ page.date }}</time>
+        </div>
+        <div class="article-header-content">
+            <h1 class="article-title">{{ page.title }}</h1>
+            {% if page.description %}
+            <p class="article-subtitle">{{ page.description }}</p>
+            {% endif %}
+        </div>
+    </header>
 
-<div class="article-copyright">
-    © {{ page.date | date(format="%Y") }} RDMSR — 
-    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
-</div>
+    <div class="article-body">
+        {{ page.content | safe }}
+    </div>
 
-<div class="article-footer">
-    {% if page.lower %}
-    <div>
-        <span class="nav-label">← Previous</span>
-        <a href="{{ page.lower.permalink }}">{{ page.lower.title }}</a>
+    <div class="article-copyright">
+        © {{ page.date | date(format="%Y") }} RDMSR —
+        <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
     </div>
-    {% else %}
-    <div></div>
-    {% endif %}
-    {% if page.higher %}
-    <div>
-        <span class="nav-label">Next →</span>
-        <a href="{{ page.higher.permalink }}">{{ page.higher.title }}</a>
-    </div>
-    {% else %}
-    <div></div>
-    {% endif %}
-</div>
+
+</article>
 
 {% endblock content %}

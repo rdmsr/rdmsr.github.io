@@ -9,12 +9,13 @@ author = "rdmsr"
 [markdown]
 highlighting.style = "class"
 highlighting.theme = "vitesse-light"
+bottom_footnotes = true
 
 [[extra.projects]]
-title = "fuga"
+title = "zag"
 meta = 'Software'
-url = "https://github.com/fuga-org/fuga"
-description = "Microkernel from scratch"
+url = "https://github.com/rdmsr/zag"
+description = "Operating system kernel"
 
 [[extra.projects]]
 title = "duck"
