@@ -129,7 +129,7 @@ To do *multi-hop* priority inheritance, the priority boosting code needs to foll
 `turnstile->owner->turnstile->owner...` until it reaches an owner that is not blocked on a synchronization object (this could be kept track by a `waiting_on` field in the thread structure).
 
 
-The locking required to do this actually gets quite nasty, so I advise you read the comments in the [Illumos implementation](https://github.com/illumos/illumos-gate/blob/master/usr/src/uts/common/os/turnstile.c)[^2] if you're hungry for more details. The gist of it is that there is a `bucket lock -> thread lock` locking hierarchy, and the successive bucket locks are trylocked. If the acquisition fails then everything is dropped and tried again as to avoid a livelock between two CPUs currently doing a PI walk.
+The locking required to do this actually gets quite nasty, so I advise you read the comments in the [Illumos implementation](https://github.com/illumos/illumos-gate/blob/master/usr/src/uts/common/os/turnstile.c)[^2] if you're hungry for more details. The gist of it is that there is a `bucket lock -> thread lock` locking hierarchy, and the successive bucket locks are trylocked. If the acquisition fails then everything is dropped and tried again as to avoid a deadlock between two CPUs concurrently doing a PI walk.
 
 
 ### Limitations
