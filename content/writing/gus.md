@@ -57,7 +57,7 @@ The algorithm goes as follows, in pseudocode:
 ```
 enter():
     store(cpu.cur_seq, load(global_write_seq, relaxed), relaxed)
-    fence()
+    fence(seq_cst)
 
 exit():
     store(cpu.cur_seq, SEQ_INVALID, release)
@@ -67,6 +67,8 @@ advance():
 
 // Returns whether a sequence `goal` is reached
 poll(goal):
+    fence(seq_cst)
+    
     if goal <= global_read_seq:
         // Goal already reached!
         return true
@@ -74,15 +76,19 @@ poll(goal):
     min_seq = global_read_seq
 
     for each cpu:
-        min_seq = min(min_seq, cpu.cur_seq)
+        min_seq = min(min_seq, load(cpu.cur_seq, relaxed))
 
     if goal <= min_seq:
         // Goal reached across all CPUs
+        fence(acquire)
+        
         Exchange global_read_seq with the new one.
         return true
         
     return false
 ```
+
+> I will not go *too* much into details about the atomic operations here, if you're curious, they have been extensively described by people smarter than me! The basic idea, however, is that one needs to remember that all operations after `enter` must not be reordered w.r.t the publication of the epoch (the store to `cur_seq`)
 
 The basic idea is therefore that a sequence is essentially a timestamp[^1], and that the read sequence is always playing catch-up with the write sequence, but never actually reaching it,
 (i.e there is always at least a separation of 1 between both). Obviously, in practice, there is a bit more to it especially w.r.t memory orderings, but the whole thing is still freakishingly simple 

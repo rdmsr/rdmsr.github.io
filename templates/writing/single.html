@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ page.title }} — RDMSR{% endblock title %}
+{% block title %}{{ page.title }}{% endblock title %}
 
 {% block content %}
 
@@ -23,7 +23,7 @@
     </div>
 
     <div class="article-copyright">
-        © {{ page.date | date(format="%Y") }}
+        © Loïc Grégoire {{ page.date | date(format="%Y") }}
         <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
     </div>
 
