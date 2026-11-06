@@ -1,0 +1,10 @@
+{% component zag_toc(headings) %}
+<ul>
+    {% for heading in headings %}
+    <li>
+        <a href="{{ heading.permalink }}">{{ heading.title }}</a>
+        {% if heading.children %}{{ <zag_toc headings={heading.children} /> }}{% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endcomponent zag_toc %}

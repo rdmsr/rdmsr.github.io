@@ -1,0 +1,10 @@
+{% extends "zag/base.html" %}
+
+{% block title %}{{ section.title }} — {{ config.title }}{% endblock title %}
+{% block description %}{{ section.description }}{% endblock description %}
+
+{% block content %}
+<p class="meta"><a href="{{ get_url(path='/') }}">&larr; Main website</a></p>
+<h1>{{ section.title }}</h1>
+{{ section.content | safe }}
+{% endblock content %}

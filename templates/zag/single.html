@@ -1,0 +1,33 @@
+{% extends "zag/base.html" %}
+
+{% block title %}{{ page.title }} — zag notes{% endblock title %}
+{% block description %}{{ page.description | default(value="Personal notes on the design and development of zag.") }}{% endblock description %}
+
+{% block content %}
+<p class="meta"><a href="{{ get_url(path='@/zag/notes/_index.md') }}">&larr; All notes</a></p>
+<article>
+    <header>
+        <h1>{{ page.title }}</h1>
+        <p class="meta">
+            <time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format="%B %-d, %Y") }}</time>
+            {% if page.updated %}
+            · Updated <time datetime="{{ page.updated | date(format='%Y-%m-%d') }}">{{ page.updated | date(format="%B %-d, %Y") }}</time>
+            {% endif %}
+        </p>
+    </header>
+    {% if page.extra.toc | default(value=false) and page.toc %}
+    <details class="page-toc" open>
+        <summary>Contents</summary>
+        <nav aria-label="On this page">
+            {{ <zag_toc headings={page.toc} /> }}
+        </nav>
+    </details>
+    {% endif %}
+    {{ page.content | safe }}
+</article>
+<nav class="note-navigation" aria-label="Note navigation">
+    <a href="{{ get_url(path='@/zag/notes/_index.md') }}">&larr; All notes</a>
+    {% if page.higher %}<a href="{{ page.higher.permalink }}">Older: {{ page.higher.title }}</a>{% endif %}
+    {% if page.lower %}<a href="{{ page.lower.permalink }}">Newer: {{ page.lower.title }}</a>{% endif %}
+</nav>
+{% endblock content %}

@@ -1,0 +1,40 @@
+body {
+    margin: 40px auto;
+    padding: 0 10px;
+    max-width: 680px;
+
+    background: #f2f2ef;
+    color: #444;
+
+    font-family: sans-serif;
+}
+
+h1, h2, h3 {
+    line-height: 1.2;
+}
+
+p {
+    line-height: 1.6;
+    text-align: justify;
+    text-justify: distribute;
+    hyphens: auto;
+}
+
+code {
+    font-size: 1.2em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+td, th {
+    border: 1px solid black;
+    padding: 4px;
+}
+
+ul {
+    padding-left: 16px;
+}

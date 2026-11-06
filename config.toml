@@ -1,10 +1,10 @@
-base_url = "https://rdmsr.github.io"
-title = "RDMSR"
+base_url = "https://gregoire.dev"
+title = "Loïc Grégoire"
 compile_sass = false
 generate_feeds = true
 
 [extra]
-author = "rdmsr"
+author = "Loïc Grégoire"
 
 [markdown]
 highlighting.style = "class"
@@ -14,7 +14,7 @@ bottom_footnotes = true
 [[extra.projects]]
 title = "zag"
 meta = 'Software'
-url = "https://github.com/rdmsr/zag"
+url = "/zag"
 description = "Operating system kernel"
 
 [[extra.projects]]

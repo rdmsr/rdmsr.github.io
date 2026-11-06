@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}zag — {{ config.title }}{% endblock title %}</title>
+    <meta name="description" content="{% block description %}An operating system kernel written in Zig.{% endblock description %}">
+    <link rel="stylesheet" href="{{ get_url(path='zag.css') }}">
+    <link rel="stylesheet" href="{{ get_url(path='giallo.css') }}">
+    {% set notes = get_section(path="zag/notes/_index.md") %}
+    {% if notes.pages %}
+    <link rel="alternate" type="application/atom+xml" title="zag notes" href="{{ get_url(path='zag/notes/atom.xml') }}">
+    {% endif %}
+</head>
+<body>
+    <main id="content">
+        {% block content %}{% endblock content %}
+    </main>
+</body>
+</html>

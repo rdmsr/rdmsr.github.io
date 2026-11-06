@@ -1,0 +1,27 @@
+{% extends "zag/base.html" %}
+
+{% block title %}{{ section.title }} — zag{% endblock title %}
+{% block description %}{{ section.description }}{% endblock description %}
+
+{% block content %}
+<p class="meta"><a href="{{ get_url(path='@/zag/_index.md') }}">&larr; zag</a></p>
+<h1>{{ section.title }}</h1>
+{{ section.content | safe }}
+
+{% set_global last_period = "" %}
+{% for note in section.pages %}
+    {% set period = note.date | date(format="%B %Y") %}
+    {% if period != last_period %}
+        {% if not loop.first %}</ul>{% endif %}
+        <h2>{{ period }}</h2>
+        <ul class="notes-list">
+        {% set_global last_period = period %}
+    {% endif %}
+    <li>
+        <a href="{{ note.permalink }}"><time datetime="{{ note.date | date(format='%Y-%m-%d') }}">{{ note.date | date(format="%Y-%m-%d") }}</time>: {{ note.title }}</a>
+    </li>
+    {% if loop.last %}</ul>{% endif %}
+{% else %}
+<p class="meta empty-state">No notes yet.</p>
+{% endfor %}
+{% endblock content %}
