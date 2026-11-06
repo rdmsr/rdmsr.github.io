@@ -156,7 +156,7 @@ Turnstiles are currently used in:
 - [NetBSD](https://github.com/NetBSD/src/blob/trunk/sys/kern/kern_turnstile.c).
 
 Additionally, some hobby OSes have adopted them:
-- My own, [zag](https://github.com/rdmsr/zag/blob/master/src/kern/turnstile.zig)[^3]
+- My own, [zag](https://github.com/rdmsr/zag/blob/master/src/sys/kern/turnstile.zig)[^3]
 - [MINTIA](https://github.com/xrarch/mintia2/blob/main/OS/Executive/Ke/KeTurnstile.jkl)
 - [Keyronex](https://github.com/Keyronex/Keyronex/blob/master/kernel/common/kern/turnstil.c)
 

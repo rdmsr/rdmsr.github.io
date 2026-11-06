@@ -196,7 +196,7 @@ Additionally, these are useful resources:
 - Comparison with RCU by [Joel Fernandes](https://people.kernel.org/joelfernandes/gus-vs-rcu), a Linux developer.
 
 
-I have also implemented GUS and an allocator inspired by XNU's and UMA in my own operating system, zag ([SMR link](https://github.com/rdmsr/zag/blob/master/src/kern/smr.zig), [allocator link](https://github.com/rdmsr/zag/blob/master/src/mm/zone.zig))
+I have also implemented GUS and an allocator inspired by XNU's and UMA in my own operating system, zag ([SMR link](https://github.com/rdmsr/zag/blob/master/src/sys/kern/smr.zig), [allocator link](https://github.com/rdmsr/zag/blob/master/src/mm/zone.zig))
 
 
 ## Footnotes
