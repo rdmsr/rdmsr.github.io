@@ -99,7 +99,11 @@ The `config.warden` check here is done at compile-time and all lock-tracking cod
 the warden enabled.
 
 A powerful realization is that this scheme can do more than check for cycles, since it hooks into lock functions. 
-This could, for example, also be used to check that preemption is disabled when a spinlock is acquired, or check that all spinlocks are subordinates of blocking locks.
+This could, for example, also be used to check that preemption is disabled when a spinlock is acquired, or check that all spinlocks are subordinates of blocking locks. 
+
+Another use case as seen in Linux's lockdep is IRQ safety, where locks that disable interrupts are ensured to always disable interrupts, and locks that don't disable interrupts are enforced to never be taken under locks that do. The latter could cause
+a deadlock in a situation where the ordering goes `irq-safe -> irq-unsafe`; an IRQ could happen when holding the `irq-unsafe` lock, which would cause an inversion.
+
 
 I've also implemented a similar scheme in [MINTIA](https://github.com/xrarch/mintia2) and was able to use those lock tracking points to measure contention. 
 
@@ -108,6 +112,12 @@ Debugger support was also added to show off the lock hierarchies in the system:
 {{<figure src="/mintia-locks.png" alt="" caption="All the locks in MINTIA viewed in the debugger" width="80%"/>}}
 
 (I admit, this is mostly eye-candy more than anything else!)
+
+## Other possible implementations
+An alternative approach to deadlock detection is to assign each lock class a static numerical *rank* and enforce a strict ordering on lock operations: locks must be acquired in strictly increasing rank order and released in strictly decreasing rank order.
+This approach may be simpler to implement than the algorithm outlined above, as it eliminates the need for building a graph at runtime. 
+
+However, it places a greater burden on the programmer, who must define the ordering in advance.
 
 ## Resources
 General idea/algorithms:
